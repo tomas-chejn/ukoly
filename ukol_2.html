@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Sčítání libovolně velkých čísel</title>
+		<style>
+* {
+	font-size: 12pt;
+}
+
+.vysledek {
+	font-size: 20pt;
+	font-weight: bold;
+}
+
+.vysledek::before {
+	content: "Výsledek: ";
+	font-weight: lighter;
+}
+
+[name^=cislo] {
+	width: 500px;
+}
+		</style>
+		<script>
+function secistCisla(cislo1, cislo2) {
+	// cislo1 a cislo2 musi byt string
+	var soucet = "";
+	var pamatuju = 0;
+
+	// nejdrive zjistit, ktere cislo je nejdelsi
+	var cislo1length = cislo1.length;
+	var cislo2length = cislo2.length;
+	var nejdelsi = Math.max(cislo1length, cislo2length);
+
+	// zde se provadi scitani pod sebou
+	for(var cislo = nejdelsi; cislo > 0; cislo--) {
+		var provadene1 = parseInt(cislo1.substring(cislo1length-1, cislo1length)) || 0;
+		var provadene2 = parseInt(cislo2.substring(cislo2length-1, cislo2length)) || 0;
+		var mezisoucet = provadene1 + provadene2 + pamatuju;
+		var konecneCislo;
+		if(mezisoucet >= 10) {
+			konecneCislo = mezisoucet - 10;
+			pamatuju = 1;
+		}
+		else {
+			konecneCislo = mezisoucet;
+			pamatuju = 0;
+		}
+		soucet = konecneCislo + soucet;
+		cislo1length--;
+		cislo2length--;
+	}
+
+	if(pamatuju == 1) {
+		soucet = pamatuju + soucet;
+	}
+
+	return soucet;
+}
+		</script>
+	</head>
+	<body>
+		<form>
+			<div>
+				<label>
+					<span>První číslo:</span>
+					<input name="cislo1" type="number" value="158775">
+				</label>
+			</div>
+			<div>
+				<label>
+					<span>Druhé číslo:</span>
+					<input name="cislo2" type="number" value="6695">
+				</label>
+			</div>
+			<button type="button" class="soucet">Sečíst čísla</button>
+			<div class="vysledek"></div>
+		</form>
+		<script>
+document.querySelector(".soucet").onclick = function() {
+	// zde se pouziva funkce pro secteni cisel
+	var cislo1 = document.querySelector("input[name=cislo1]").value;
+	var cislo2 = document.querySelector("input[name=cislo2]").value;
+	document.querySelector(".vysledek").innerText = secistCisla(cislo1, cislo2);
+};
+		</script>
+	</body>
+</html>
