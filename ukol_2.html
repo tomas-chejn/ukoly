@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Sčítání libovolně velkých čísel</title>
+		<style>
+* {
+	font-size: 15pt;
+}
+
+.vysledek {
+	font-size: 24pt;
+	font-weight: bold;
+}
+
+.vysledek::before {
+	content: "Výsledek: ";
+	font-weight: lighter;
+}
+
+[name^=cislo] {
+	width: 500px;
+}
+		</style>
+		<script>
+function secistCisla(cislo1, cislo2) {
+	// cislo1 a cislo2 musi byt string
+	var soucet = "";
+	var pamatuju = 0;
+
+	// nejdrive zjistit, ktere cislo je nejdelsi
+	var cislo1length = cislo1.length;
+	var cislo1nasobek = 1;
+	if(cislo1.substring(0, 1) == "-") {
+		cislo1 = cislo1.substring(1, cislo1length);
+		cislo1nasobek = -1;
+		cislo1length -= 1;
+	}
+	var cislo2length = cislo2.length;
+	var cislo2nasobek = 1;
+	if(cislo2.substring(0, 1) == "-") {
+		cislo2 = cislo2.substring(1, cislo2length);
+		cislo2nasobek = -1;
+		cislo2length -= 1;
+	}
+	var nejdelsi = Math.max(cislo1length, cislo2length);
+
+	var kladnyVysledek = true;
+	var prvniJeVetsi = true;
+	if((cislo1nasobek == -1) && (cislo2nasobek == -1)) {
+		kladnyVysledek = false;
+	}
+	else if((cislo1nasobek == -1) || (cislo2nasobek == -1)) {
+		if(cislo1length > cislo2length) {
+			prvniJeVetsi = true;
+			if(cislo1nasobek == -1) {
+				kladnyVysledek = false;
+			}
+			else {
+				kladnyVysledek = true;
+			}
+		}
+		else if(cislo2length > cislo1length) {
+			prvniJeVetsi = false;
+			if(cislo2nasobek == -1) {
+				kladnyVysledek = false;
+			}
+			else {
+				kladnyVysledek = true;
+			}
+		}
+		else if(cislo1length == cislo2length) {
+			for(var misto = 0; misto < cislo1length; misto++) {
+				var kontrolovane1 = parseInt(cislo1.substring(misto, misto+1));
+				var kontrolovane2 = parseInt(cislo2.substring(misto, misto+1));
+				if(kontrolovane1 > kontrolovane2) {
+					prvniJeVetsi = true;
+					if(cislo1nasobek == -1) {
+						kladnyVysledek = false;
+					}
+					else {
+						kladnyVysledek = true;
+					}
+					break;
+				}
+				else if(kontrolovane1 < kontrolovane2) {
+					prvniJeVetsi = false;
+					if(cislo2nasobek == -1) {
+						kladnyVysledek = false;
+					}
+					else {
+						kladnyVysledek = true;
+					}
+					break;
+				}
+			}
+		}
+	}
+
+	// zde se provadi scitani/odcitani pod sebou
+	for(var cislo = nejdelsi; cislo > 0; cislo--) {
+		var provadene1;
+		var provadene2;
+		if(prvniJeVetsi) {
+			provadene1 = parseInt(cislo1.substring(cislo1length-1, cislo1length)) || 0;
+			provadene2 = parseInt(cislo2.substring(cislo2length-1, cislo2length))*cislo1nasobek*cislo2nasobek || 0;
+		}
+		else {
+			provadene1 = parseInt(cislo2.substring(cislo2length-1, cislo2length)) || 0;
+			provadene2 = parseInt(cislo1.substring(cislo1length-1, cislo1length))*cislo1nasobek*cislo2nasobek || 0;
+		}
+		var mezisoucet = provadene1 + provadene2 + pamatuju;
+
+		var konecneCislo;
+		if(mezisoucet >= 10) {
+			konecneCislo = mezisoucet - 10;
+			pamatuju = 1;
+		}
+		else if(mezisoucet < 0) {
+			konecneCislo = mezisoucet + 10;
+			pamatuju = -1;
+		}
+		else {
+			konecneCislo = mezisoucet;
+			pamatuju = 0;
+		}
+
+		if(konecneCislo < 0) {
+			konecneCislo *= -1;
+		}
+		soucet = konecneCislo + soucet;
+		cislo1length--;
+		cislo2length--;
+	}
+
+	if(pamatuju != 0) {
+		soucet = 1 + soucet;
+	}
+
+	while(soucet.substring(0, 1) == "0") {
+		soucet = soucet.substring(1, soucet.length)
+	}
+
+	if(!kladnyVysledek) {
+		soucet = "-" + soucet;
+	}
+
+	return soucet;
+}
+		</script>
+	</head>
+	<body>
+		<form>
+			<div>
+				<label>
+					<span>První číslo:</span>
+					<input name="cislo1" type="number" value="158775">
+				</label>
+			</div>
+			<div>
+				<label>
+					<span>Druhé číslo:</span>
+					<input name="cislo2" type="number" value="6695">
+				</label>
+			</div>
+			<button type="button" class="soucet">Sečíst čísla</button>
+			<div class="vysledek"></div>
+		</form>
+		<script>
+document.querySelector(".soucet").onclick = function() {
+	// zde se pouziva funkce pro secteni cisel
+	var cislo1 = document.querySelector("input[name=cislo1]").value;
+	var cislo2 = document.querySelector("input[name=cislo2]").value;
+	document.querySelector(".vysledek").innerText = secistCisla(cislo1, cislo2);
+};
+		</script>
+	</body>
+</html>

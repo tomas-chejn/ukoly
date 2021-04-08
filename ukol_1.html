@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Hledání maxima a minima v dvourozměrném poli</title>
+		<style>
+* {
+	font-size: 15pt;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+td {
+	border: 1px solid black;
+	padding: 15px;
+	font-size: 20pt;
+}
+
+.min {
+	color: red;
+	font-weight: bold;
+}
+
+.max {
+	background: green;
+	font-weight: bold;
+}
+		</style>
+		<script>
+function nahodneCislo() {
+	// tato funkce vytvori nahodne cislo v rozumnem formatu
+	return Math.floor(Math.random() * 10000);
+}
+
+function vytvoritMatici(pocetRadku, pocetSloupcu) {
+	// vytvori se dvourozmerne pole
+	var matice = [];
+
+	for(var radek = 0; radek < pocetRadku; radek++) {
+		var radekMatice = [];
+		for(var sloupec = 0; sloupec < pocetSloupcu; sloupec++) {
+			radekMatice.push(nahodneCislo());
+		}
+		matice.push(radekMatice);
+	}
+
+	return matice;
+}
+
+function najitMinMax(matice) {
+	// v existujici matici najde minimum a maximum
+	var min, max;
+	min = max = matice[0][0];
+	matice.forEach(function(radek) {
+		radek.forEach(function(polozka) {
+			if(polozka < min) {
+				min = polozka;
+			}
+			if(polozka > max) {
+				max = polozka;
+			}
+		});
+	});
+
+	return [min, max];
+}
+
+function vytvoritTabulku() {
+	// zajisti (znovu)vytvoreni tabulky
+	var pocetRadku = parseInt(document.querySelector("input[name=radky]").value);
+	var pocetSloupcu = parseInt(document.querySelector("input[name=sloupce]").value);
+	var matice = vytvoritMatici(pocetRadku, pocetSloupcu);
+	var minMax = najitMinMax(matice);
+	var min = minMax[0];
+	var max = minMax[1];
+	var table = document.createElement("table");
+
+	matice.forEach(function(radek) {
+		var tr = document.createElement("tr");
+		radek.forEach(function(cislo) {
+			var td = document.createElement("td");
+			// cislo muze byt minimem i maximem zaroven
+			if(cislo == min) {
+				td.className += "min";
+			}
+			if(cislo == max) {
+				td.className += " max";
+			}
+			td.innerText = cislo;
+			tr.appendChild(td);
+		});
+		table.appendChild(tr);
+	});
+
+	document.querySelector(".tabulka").innerHTML = "";
+	document.querySelector(".tabulka").appendChild(table);
+}
+		</script>
+	</head>
+	<body>
+		<form>
+			<div>
+				<label>
+					<span>Počet řádků:</span>
+					<input name="radky" type="number" value="5">
+				</label>
+			</div>
+			<div>
+				<label>
+					<span>Počet sloupců:</span>
+					<input name="sloupce" type="number" value="6">
+				</label>
+			</div>
+			<button type="button" class="vytvorit">Najít maxima a minima</button>
+		</form>
+		<br>
+		<table>
+			<tr>
+				<td class="min">Minimum</td>
+				<td class="max">Maximum</td>
+			</tr>
+		</table>
+		<br>
+		<div class="tabulka">
+		</div>
+		<script>
+document.querySelector(".vytvorit").onclick = vytvoritTabulku;
+		</script>
+	</body>
+</html>
